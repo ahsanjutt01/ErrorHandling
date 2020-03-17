@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const { check, body } = require('express-validator/check');
+const { check, body } = require('express-validator');
 
 const helper = require('../../_helpers/helper');
 
@@ -11,25 +11,26 @@ const router = express.Router();
 
 router.post('/updateUser', passport.authenticate('jwt', {session: false}), helper.isAdmin, adminController.updateUser);
 
-router.post('/signup', 
-check('email').isEmail()
-.withMessage('please enter a valid email')
-.normalizeEmail(),
-// body('password', 'please enter a password with only numbers and text and at lest 8 characters.')
-// .isLength({min: 8})
-// .isAlphanumeric()
-// .trim(),
-adminController.postSignup);
+// router.post('/signup', 
+// check('email').isEmail()
+// .withMessage('please enter a valid email')
+// .normalizeEmail(),
+// // body('password', 'please enter a password with only numbers and text and at lest 8 characters.')
+// // .isLength({min: 8})
+// // .isAlphanumeric()
+// // .trim(),
+// adminController.postSignup);
 
-router.post('/postClient', 
+router.post('/postUser', 
 check('email').isEmail()
 .withMessage('please enter a valid email')
 .normalizeEmail(),
+helper.getUserType,
 // body('password', 'please enter a password with only numbers and text and at lest 8 characters.')
 // .isLength({min: 8})
 // .isAlphanumeric()
 // .trim(),
-adminController.postClient);
+adminController.postUser);
 
 router.get('/getAdminUsers', passport.authenticate('jwt', {session: false}), helper.isAdmin, adminController.getAdminUsers);
 

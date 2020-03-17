@@ -1,4 +1,6 @@
 const Sequelize = require('sequelize');
+
+const { dbName, dbUserName, dbPassword, dbHost, dbPort} = require('../config');
 const Op = Sequelize.Op;
 const operatorsAliases = {
   $or: Op.or,
@@ -12,10 +14,12 @@ const operatorsAliases = {
   $like: Op.like,
 };
 
-const sequelize = new Sequelize('whatwethink', 'doadmin', 't83g4j5580bj37m6', {
+console.log('_DB_Name', dbName, ' _DB_USER_NAME ', dbUserName, '_DB_PASSWORD ', dbPassword );
+
+const sequelize = new Sequelize(dbName, dbUserName, dbPassword, {
     dialect: 'mysql',
-    host: 'csdb-mysql-nyc1-07501-do-user-7039297-0.db.ondigitalocean.com',
-    port: 25060,
+    host: dbHost,
+    port: dbPort,
     operatorsAliases: operatorsAliases
 });
 

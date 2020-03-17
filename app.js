@@ -5,16 +5,19 @@ const path = require('path');
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const cookieParser = require('cookie-parser');
-
 const multer = require('multer');
+
+
+const { port, userTypeAdmin, userTypeProjectManager, userTypeTeam } = require('./config');
+
 const sequelize = require('./utils/database');
 const User = require('./models/user');
-const Role = require('./models/role');
-const UserRole = require('./models/user-role');
+// const Role = require('./models/role');
+// const UserRole = require('./models/user-role');
 const UserType = require('./models/userType');
-// const Listing = require('./models/listing');
-// const ListingImage = require('./models/listingImages');
-// const Catagory = require('./models/catagory');
+const Project = require('./models/project');
+const ProjectManagerProject = require('./models/projectManager-Projects');
+const TeamProject = require('./models/team-Projects');
 const Subscribe = require('./models/subscribe')
 // const Conversation = require('./models/conversation');
 //Routes
@@ -115,7 +118,7 @@ app.use((req, res, next) => {
 
 //  ====================== Routes ======================
 app.use(authData);
-// app.use('/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 // app.use('/client', listingRoutes);
 // app.use('/subscribe', subscribeRoutes);
 
@@ -128,12 +131,15 @@ app.use((req, res, next) => {
 // Relationships
 // Role.belongsTo(User);
 // User.hasMany(Role);
-// User.belongsToMany(Role, { through: UserRole });
-// Role.belongsToMany(User, { through: UserRole });
+Project.belongsToMany(User, { through: ProjectManagerProject }); //Project Manager type user
+User.belongsToMany(Project, { through: ProjectManagerProject }); //Project Manager type user
 // Role.belongsTo(User);
 // User.hasMany(Role);
 UserType.hasMany(User);
 User.belongsTo(UserType);
+
+Project.belongsToMany(User, { through: TeamProject }); // Team member type user
+User.belongsToMany(Project, { through: TeamProject }); // Team member type user
 
 // Listing.hasMany(ListingImage);
 // ListingImage.belongsTo(Listing);
@@ -154,8 +160,8 @@ sequelize
 .sync()
 .then( result => {
     // console.log(result);
-    console.log('Connection has been established successfully port 3200.');
-    const server = app.listen(process.env.PORT || 3200);
+    console.log('Connection has been established successfully port ' + process.env.PORT);
+    const server = app.listen(process.env.PORT || port);
 
     const io = require('./socket').init(server);
     io.on('connected', socket => {
@@ -164,8 +170,9 @@ sequelize
     });
     UserType.findAll().then(userTypes => {
       if(userTypes.length == 0) {
-        UserType.create({title: 'politician'});
-        UserType.create({title: 'people'});
+        UserType.create({title: userTypeAdmin});
+        UserType.create({title: userTypeProjectManager});
+        UserType.create({title: userTypeTeam});
       }
     });
 })

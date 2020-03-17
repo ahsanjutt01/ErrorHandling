@@ -27,7 +27,6 @@ const User =  sequelize.define('users', {
         allowNull: false
     },
     gender: Sequelize.BOOLEAN,
-    race: Sequelize.STRING,
     country: Sequelize.STRING,
     city: Sequelize.STRING,
     zipCode: Sequelize.STRING,
